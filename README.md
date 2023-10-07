@@ -1,1 +1,1 @@
-# GeoFootprintSimilaritySearch
+# Similarity Search based on Geo-footprints
