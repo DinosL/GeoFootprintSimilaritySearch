@@ -22,7 +22,7 @@ Parameters for ```main_geo_footprints.cpp```:
 | -s | User Centric method.|
 | -k | Number of similar users to be returned. Should be used together with one of the above versions (see example). |
 
-**Example:** ./a.out -k 3 -b indexedUsers_part1.csv query_part1.csv
+**Example:** ./a.out -k 3 -b sample_indexed_users.csv query_part1.csv
 
 Parameters for ```normComputation.cpp```:
 
