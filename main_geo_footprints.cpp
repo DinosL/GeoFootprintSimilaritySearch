@@ -401,9 +401,6 @@ int main(int argc, char **argv)
             case 'b':
                 indexMethod = BATCH_SEARCH;
                 break;
-            case 'u':
-                indexMethod = USER_CENTRIC;
-                break;
             case 's':
                 indexMethod = USER_CENTRIC_SORTED;
                 break;
@@ -559,92 +556,6 @@ int main(int argc, char **argv)
                 }
                 cout << "---------------------------------------------------------------------" << endl<< endl;
             } 
-            break;
-        case USER_CENTRIC:
-
-            cerr << "UserNormTime\tqueryNormTime\tindexingTime\tqueryTime\ttopKTime\n";
-
-            startTime = clock();
-            for(int i = 0; i < indexedUsers; i++) {
-        
-                float minXUserMBR, minYUserMBR;
-                float maxXUserMBR, maxYUserMBR;
-
-                minXUserMBR = userRegions[i][0].xStart;
-                minYUserMBR = userRegions[i][1].yStart;
-                maxXUserMBR = userRegions[i][2].xEnd;
-                maxYUserMBR = userRegions[i][3].yEnd;
-
-
-                for (int j = 1; j < userRegionsSize[i]; j++)
-                {
-                    minXUserMBR = min(minXUserMBR, userRegions[i][j].xStart);
-                    minYUserMBR = min(minYUserMBR, userRegions[i][j].yStart);
-                    maxXUserMBR = max(maxXUserMBR, userRegions[i][j].xEnd);
-                    maxYUserMBR = max(maxYUserMBR, userRegions[i][j].yEnd);
-                }
-
-                Rect r = Rect(minXUserMBR, minYUserMBR, maxXUserMBR, maxYUserMBR);
-                tree.Insert(r.min, r.max,i);
-            }
-
-            indexingTime = clock() - startTime;
-
-            for (int i =0; i < queryUsers; i++)
-            {
-                startTime = clock();
-
-                minXQueryMBR = queryRegions[i][0].xStart;
-                minYQueryMBR = queryRegions[i][1].yStart;
-                maxXQueryMBR = queryRegions[i][2].xEnd;
-                maxYQueryMBR = queryRegions[i][3].yEnd;
-
-                for (int j = 1; j < queryRegionsSize[i]; j++)
-                {
-                    minXQueryMBR = min(minXQueryMBR,queryRegions[i][j].xStart);
-                    minYQueryMBR = min(minYQueryMBR, queryRegions[i][j].yStart);
-                    maxXQueryMBR = max(maxXQueryMBR, queryRegions[i][j].xEnd);
-                    maxYQueryMBR = max(maxYQueryMBR, queryRegions[i][j].yEnd);
-                }
-
-                Rect q = Rect(minXQueryMBR, minYQueryMBR, maxXQueryMBR, maxYQueryMBR);
-
-                vector<int> hits = tree.Batch_Search2(q.min, q.max, queryRegions[i], queryRegionsSize[i]);
-
-
-                cout << "For the query User " << i << ":" << endl;
-                if (hits.size() <= k_value)
-                {
-                    for(int j = 0; j < hits.size(); j++)
-                    {
-                        int idx = hits[j];
-                        float similarity = spatialSimilarity(queryRegionsSize[i], queryRegions[i], userRegionsSize[idx], userRegions[idx], queryUsersNsq[i], indexedUsersNsq[idx], USER_CENTRIC);
-                        clock_t queryTime = clock() - startTime;
-                        cerr << ((double)userNormTime)/CLOCKS_PER_SEC << "\t\t" << ((double)queryNormTime)/CLOCKS_PER_SEC << "\t\t" << ((double)indexingTime)/CLOCKS_PER_SEC << "\t\t" << ((double)queryTime)/CLOCKS_PER_SEC << "\t\t0" << endl;
-                    }
-                }
-                else
-                {
-                    vector<pair<float, int>> topKUsers;
-                    for(int j = 0; j < hits.size(); j++)
-                    {
-                        int idx = hits[j];
-                        float similarity = spatialSimilarity(queryRegionsSize[i], queryRegions[i], userRegionsSize[idx], userRegions[idx], queryUsersNsq[i], indexedUsersNsq[idx], USER_CENTRIC);
-                        topKUsers.push_back(make_pair(similarity, idx));
-                    }
-
-                    sort(topKUsers.begin(), topKUsers.end(),sortbysec);
-                    clock_t queryTime = clock() - startTime;
-                    cerr << ((double)userNormTime)/CLOCKS_PER_SEC << "\t\t" << ((double)queryNormTime)/CLOCKS_PER_SEC << "\t\t" << ((double)indexingTime)/CLOCKS_PER_SEC << "\t\t" << ((double)queryTime)/CLOCKS_PER_SEC << "\t\t0" << endl;
- 
-                    for (int j = 0; j < k_value; j++)
-                    {
-                        cout << "\tUser ID: " << topKUsers[j].second << " - similarity: " << topKUsers[j].first << endl;
-                    }
-                }
-
-                cout << "---------------------------------------------------------------------" << endl<< endl;
-            }
             break;
         case USER_CENTRIC_SORTED:
             cerr << "UserNormTime\tqueryNormTime\tindexingTime\tqueryTime\ttopKTime\n";
