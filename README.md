@@ -33,4 +33,4 @@ Parameters for ```normComputation.cpp```:
 | -p | Join-based similarity computation (Algorithm 4 in the paper)|
 | -k | Number of similar users to be returned. |
 
-**Example:** ./a.out -k 3 -s indexedUsers_part1.csv query_part1.csv
+**Example:** ./a.out -k 3 -s sample_indexed_users.csv query_part1.csv
